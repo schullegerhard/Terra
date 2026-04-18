@@ -27,7 +27,10 @@ export async function GET(request: Request) {
           dest = "/admin";
         }
       }
+      console.log(`[Auth Callback] Success! Redirecting to: ${origin}${dest}`);
       return NextResponse.redirect(`${origin}${dest}`);
+    } else {
+      console.log("[Auth Callback] Error during token exchange:", error);
     }
   }
 

@@ -58,23 +58,35 @@ export async function ensureUserProfileInDb(
     });
   };
 
-  for (let n = 0; n < 500; n++) {
+  for (let n = 0; n < 5; n++) { // Reduced loop from 500 to 5 to avoid terminal spam
     const uname = n === 0 ? base : `${base}${n}`;
     const { error } = await tryInsert(uname);
 
     if (!error) {
+      console.log(`[ensureUserProfile] Success inserting ${uname}`);
       return { ok: true, error: null };
     }
 
+    console.log(`[ensureUserProfile] tryInsert error for ${uname}:`, error);
+
     const code = (error as { code?: string }).code;
+    const msg = (error as { message?: string }).message || "";
+    
     if (code === "23505") {
+      if (msg.includes("users_pkey")) {
+        console.log(`[ensureUserProfile] users_pkey violation precisely caught! Row already perfectly exists. Bypassing Next.js cache!`);
+        return { ok: true, error: null };
+      }
+      
       if (await userRowExists(supabase, user.id)) {
         return { ok: true, error: null };
       }
+      
+      console.log(`[ensureUserProfile] 23505 unique violation on username/referral. Incrementing username and continuing.`);
       continue;
     }
 
-    return { ok: false, error: error.message };
+    return { ok: false, error: msg };
   }
 
   for (let k = 0; k < 24; k++) {

@@ -9,6 +9,8 @@ import { createClient } from "@/lib/supabase/server";
 import { DashboardClaim } from "./dashboard-claim";
 import Link from "next/link";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardPage() {
   const supabase = await createClient();
   const {
@@ -18,7 +20,7 @@ export default async function DashboardPage() {
 
   const ensured = await ensureUserProfileInDb(supabase, user);
 
-  const { data: profile } = await supabase
+  const { data: profileResult } = await supabase
     .from("users")
     .select("*")
     .eq("id", user.id)
@@ -27,6 +29,8 @@ export default async function DashboardPage() {
   const { data: rank } = await supabase.rpc("get_user_rank", {
     p_user_id: user.id,
   });
+
+  const profile = profileResult;
 
   if (!profile) {
     return (

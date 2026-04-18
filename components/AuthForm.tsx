@@ -23,7 +23,7 @@ export function AuthForm() {
       ? window.location.origin
       : process.env.NEXT_PUBLIC_SITE_URL ?? "";
 
-  const signIn = async (provider: "google" | "twitter") => {
+  const signIn = async (provider: "google" | "twitter" | "x") => {
     setLoading(provider);
     const supabase = createClient();
     const next = searchParams.get("next") ?? "/dashboard";
@@ -52,10 +52,10 @@ export function AuthForm() {
       <button
         type="button"
         disabled={!!loading}
-        onClick={() => void signIn("twitter")}
+        onClick={() => void signIn("x")}
         className="flex w-full items-center justify-center gap-2 rounded-2xl bg-black py-3 text-sm font-semibold text-white shadow-md transition hover:-translate-y-0.5 hover:bg-black/90 hover:shadow-lg active:translate-y-0 disabled:opacity-60"
       >
-        {loading === "twitter" ? "Connecting…" : "Continue with X"}
+        {loading === "x" ? "Connecting…" : "Continue with X"}
       </button>
       <p className="text-center text-[11px] leading-relaxed text-black/45">
         If X shows{" "}
